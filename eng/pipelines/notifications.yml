@@ -12,29 +12,6 @@ stages:
   jobs:
   - job: Run
     timeoutInMinutes: 120
-    strategy:
-      # Running all entries simultaneously causes "Service Unavailable" errors
-      maxParallel: 2
-      matrix:
-        NET:
-          PathPrefix: 'net'
-        Python:
-          PathPrefix: 'python'
-        JS:
-          PathPrefix: 'js'
-        Java:
-          PathPrefix: 'java'
-        C:
-          PathPrefix: 'c'
-        CPP:
-          PathPrefix: 'cpp'
-        Go:
-          PathPrefix: 'go'
-        AzDev:
-          PathPrefix: 'azure-dev'
-        Public:
-          Project: 'public'
-          PathPrefix: 'notify'
 
     pool:
       name: azsdk-pool-mms-ubuntu-2204-general
@@ -46,28 +23,16 @@ stages:
       DotNetDevOpsFeed: "https://pkgs.dev.azure.com/azure-sdk/public/_packaging/azure-sdk-for-net/nuget/v3/index.json"
 
     steps:
-      - task: DotNetCoreCLI@2
-        displayName: 'Install Notification Creator'
-        inputs:
-          command: custom
-          custom: 'tool'
-          arguments: 'install --global --add-source "$(DotNetDevOpsFeed)" --version "$(NotificationsCreatorVersion)" "Azure.Sdk.Tools.NotificationConfiguration"'
-          workingDirectory: '$(Agent.BuildDirectory)'
-
       - task: AzureCLI@2
         displayName: 'Run Team/Notification Creator'
         inputs:
           azureSubscription: 'opensource-api-connection'
           scriptType: pscore
           scriptLocation: inlineScript
-          inlineScript: 
-            notification-creator `
-              --organization $(Organization) `
-              --project $(Project) `
-              --path-prefix "\$(PathPrefix)" `
-              --selection-strategy Scheduled `
-              $(AdditionalParameters)
-        env:
-          DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
-          DOTNET_CLI_TELEMETRY_OPTOUT: 1
-          DOTNET_MULTILEVEL_LOOKUP: 0
+          inlineScript: |
+            Write-Host 'az account get-access-token --scope '66b6ea26-954d-4b68-8f48-71e3faec7ad1/.default' --query accessToken --output tsv'
+            $token = az account get-access-token --scope '66b6ea26-954d-4b68-8f48-71e3faec7ad1/.default' --query accessToken --output tsv
+            Write-Host "##vso[task.setvariable variable=__throwawaysecret;issecret=true]$token"
+            $headers = @{ Authorization="Bearer $token"; "api-version"="2019-10-01" }
+            Write-Host 'invoke-restmethod -Headers $headers -Method GET -Uri https://repos.opensource.microsoft.com/api/people/links'
+            Invoke-RestMethod -Headers $headers -Method GET -Uri https://repos.opensource.microsoft.com/api/people/links
