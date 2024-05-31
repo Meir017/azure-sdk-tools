@@ -55,29 +55,49 @@ public class DocumentIndexer
         string vectorSearchHnswConfig = "my-hsnw-vector-config";
         var index = new SearchIndex(_indexName)
         {
-           Fields =
-           {
+            Fields =
+            {
                 new SimpleField("Id", SearchFieldDataType.String) { IsKey = true, IsFilterable = true },
                 new SearchableField("Content") { IsFilterable = true },
                 new VectorSearchField("ContentVector", 1536, vectorSearchConfigName),
                 new SearchableField("Source") { IsFilterable = true, IsSortable = true, IsFacetable = true},
                 new SearchableField("Title") { IsFilterable = true, IsSortable = true, IsFacetable = true},
-           },
-           VectorSearch = new()
-           {
-               Profiles =
-               {
+                new SimpleField("Timestamp", SearchFieldDataType.DateTimeOffset) { IsFilterable = true, IsSortable = true }
+            },
+                VectorSearch = new()
+                {
+                    Profiles =
+                {
                     new VectorSearchProfile(vectorSearchConfigName, vectorSearchHnswConfig)
-               },
-               Algorithms =
-               {
-                   new HnswAlgorithmConfiguration(vectorSearchHnswConfig)
-               }
-           }
+                },
+                    Algorithms =
+                {
+                    new HnswAlgorithmConfiguration(vectorSearchHnswConfig)
+                }
+                },
+                ScoringProfiles =
+                {
+                    // newlyAddedBoost scoring profile is added to boost the score of newer documents
+                    new ScoringProfile("newlyAddedBoost")
+                    {
+                        TextWeights = new TextWeights(new Dictionary<string, double>
+                        {
+                            { "Timestamp", 1.5 }
+                        }),
+                        Functions =
+                        {
+                            new FreshnessScoringFunction("Timestamp", 1, new FreshnessScoringParameters(TimeSpan.FromDays(30)))
+                            {
+                                Interpolation = ScoringFunctionInterpolation.Linear
+                            }
+                        }
+                    }
+                }
         };
 
         await _indexClient.CreateIndexAsync(index);
     }
+
 
     public async Task DeleteIndex()
     {
@@ -138,7 +158,9 @@ public class DocumentIndexer
                 Source = string.Concat(Document.RepoUrl, _repoName, "/issues/", issue.IssueNumber),
                 Title = issue.Title,
                 Content = chunks[i],
-                ContentVector = await Vectorize(chunks[i])
+                ContentVector = await Vectorize(chunks[i]),
+                // should this be the timestamp of the last comment, if not closed?
+                Timestamp = issue.ClosedAt ?? DateTime.UtcNow
             });
         }
 
@@ -167,7 +189,8 @@ public class DocumentIndexer
                 Source = string.Concat(Document.RepoUrl, _repoName, "/tree/main/", relativePath),
                 Title = firstLine,
                 Content = chunks[i],
-                ContentVector = await Vectorize(chunks[i])
+                ContentVector = await Vectorize(chunks[i]),
+                Timestamp = File.GetLastWriteTime(absolutePath)
             });
         }
 
@@ -226,6 +249,7 @@ public class DocumentIndexer
         public string? Content { get; set; }
 
         public IReadOnlyList<float>? ContentVector { get; set; }
+        public DateTimeOffset? Timestamp { get; set; }
 
         internal static string GetFullContent(Issue issue)
         {
