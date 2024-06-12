@@ -31,7 +31,6 @@ namespace ApiView
 #pragma warning restore 618
             set => _versionString = value;
         }
-        public string ParserStyle { get; set; }
         public string Name { get; set; }
         public string Language { get; set; }
         public string LanguageVariant { get; set; }

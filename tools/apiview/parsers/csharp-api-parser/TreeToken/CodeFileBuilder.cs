@@ -111,7 +111,6 @@ namespace CSharpAPIParser.TreeToken
                 Language = "C#",
                 APIForest = new List<APITreeNode>() { apiTreeNode },
                 VersionString = CurrentVersion,
-                ParserStyle = "Tree",
                 Diagnostics = analyzer.Results.ToArray(),
                 PackageName = assemblySymbol.Name,
                 PackageVersion = assemblySymbol.Identity.Version.ToString()
