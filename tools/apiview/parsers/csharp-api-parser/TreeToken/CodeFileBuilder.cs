@@ -83,9 +83,9 @@ namespace CSharpAPIParser.TreeToken
             
             if (dependencies != null)
             {
-                BuildDependencies(apiTreeNode.Children, dependencies);
+                BuildDependencies(apiTreeNode.ChildrenObj, dependencies);
             }
-            BuildInternalsVisibleToAttributes(apiTreeNode.Children, assemblySymbol);
+            BuildInternalsVisibleToAttributes(apiTreeNode.ChildrenObj, assemblySymbol);
 
             foreach (var namespaceSymbol in SymbolOrderProvider.OrderNamespaces(EnumerateNamespaces(assemblySymbol)))
             {
@@ -93,12 +93,12 @@ namespace CSharpAPIParser.TreeToken
                 {
                     foreach (var namedTypeSymbol in SymbolOrderProvider.OrderTypes(namespaceSymbol.GetTypeMembers()))
                     {
-                        BuildType(apiTreeNode.Children, namedTypeSymbol, false);
+                        BuildType(apiTreeNode.ChildrenObj, namedTypeSymbol, false);
                     }
                 }
                 else
                 {
-                    BuildNamespace(apiTreeNode.Children, namespaceSymbol);
+                    BuildNamespace(apiTreeNode.ChildrenObj, namespaceSymbol);
                 }
             }
 
@@ -131,8 +131,8 @@ namespace CSharpAPIParser.TreeToken
             {
                 var apiTreeNode = new APITreeNode();
                 apiTreeNode.Kind = apiTreeNode.Name = apiTreeNode.Id = "InternalsVisibleTo";
-                apiTreeNode.TopTokens.Add(StructuredToken.CreateTextToken(value: "Exposes internals to:"));
-                apiTreeNode.TopTokens.Add(StructuredToken.CreateLineBreakToken());
+                apiTreeNode.TopTokensObj.Add(StructuredToken.CreateTextToken(value: "Exposes internals to:"));
+                apiTreeNode.TopTokensObj.Add(StructuredToken.CreateLineBreakToken());
 
                 foreach (AttributeData attribute in assemblyAttributes)
                 {
@@ -143,12 +143,12 @@ namespace CSharpAPIParser.TreeToken
                         {
                             var firstComma = param?.IndexOf(',');
                             param = firstComma > 0 ? param?[..(int)firstComma] : param;
-                            apiTreeNode.TopTokens.Add(StructuredToken.CreateTextToken(value: param, id: attribute.AttributeClass?.Name));
+                            apiTreeNode.TopTokensObj.Add(StructuredToken.CreateTextToken(value: param, id: attribute.AttributeClass?.Name));
                         }
                     }
                 }
-                apiTreeNode.BottomTokens.Add(StructuredToken.CreateEmptyToken());
-                apiTreeNode.BottomTokens.Add(StructuredToken.CreateLineBreakToken());
+                apiTreeNode.BottomTokensObj.Add(StructuredToken.CreateEmptyToken());
+                apiTreeNode.BottomTokensObj.Add(StructuredToken.CreateLineBreakToken());
                 apiTree.Add(apiTreeNode);
             }
         }
@@ -160,18 +160,18 @@ namespace CSharpAPIParser.TreeToken
                 var apiTreeNode = new APITreeNode();
                 apiTreeNode.Kind = apiTreeNode.Name = apiTreeNode.Id = "Dependencies";
 
-                apiTreeNode.TopTokens.Add(StructuredToken.CreateLineBreakToken());
-                apiTreeNode.TopTokens.Add(StructuredToken.CreateTextToken(value: "Dependencies:"));
-                apiTreeNode.TopTokens.Add(StructuredToken.CreateLineBreakToken());
+                apiTreeNode.TopTokensObj.Add(StructuredToken.CreateLineBreakToken());
+                apiTreeNode.TopTokensObj.Add(StructuredToken.CreateTextToken(value: "Dependencies:"));
+                apiTreeNode.TopTokensObj.Add(StructuredToken.CreateLineBreakToken());
 
                 foreach (DependencyInfo dependency in dependencies)
                 {
-                    apiTreeNode.TopTokens.Add(StructuredToken.CreateTextToken(value: dependency.Name, id: dependency.Name));
-                    apiTreeNode.TopTokens.Add(StructuredToken.CreateTextToken(value: $"-{dependency.Version}"));
-                    apiTreeNode.TopTokens.Add(StructuredToken.CreateLineBreakToken());
+                    apiTreeNode.TopTokensObj.Add(StructuredToken.CreateTextToken(value: dependency.Name, id: dependency.Name));
+                    apiTreeNode.TopTokensObj.Add(StructuredToken.CreateTextToken(value: $"-{dependency.Version}"));
+                    apiTreeNode.TopTokensObj.Add(StructuredToken.CreateLineBreakToken());
                 }
-                apiTreeNode.BottomTokens.Add(StructuredToken.CreateEmptyToken());
-                apiTreeNode.BottomTokens.Add(StructuredToken.CreateLineBreakToken());
+                apiTreeNode.BottomTokensObj.Add(StructuredToken.CreateEmptyToken());
+                apiTreeNode.BottomTokensObj.Add(StructuredToken.CreateLineBreakToken());
                 apiTree.Add(apiTreeNode);
             }
         }
@@ -187,23 +187,23 @@ namespace CSharpAPIParser.TreeToken
 
             if (isHidden)
             {
-                apiTreeNode.Tags.Add("Hidden");
+                apiTreeNode.TagsObj.Add("Hidden");
             }
             
-            apiTreeNode.TopTokens.Add(StructuredToken.CreateKeywordToken(SyntaxKind.NamespaceKeyword));
-            apiTreeNode.TopTokens.Add(StructuredToken.CreateSpaceToken());
-            BuildNamespaceName(apiTreeNode.TopTokens, namespaceSymbol);
-            apiTreeNode.TopTokens.Add(StructuredToken.CreateSpaceToken());
-            apiTreeNode.TopTokens.Add(StructuredToken.CreatePunctuationToken(SyntaxKind.OpenBraceToken));
+            apiTreeNode.TopTokensObj.Add(StructuredToken.CreateKeywordToken(SyntaxKind.NamespaceKeyword));
+            apiTreeNode.TopTokensObj.Add(StructuredToken.CreateSpaceToken());
+            BuildNamespaceName(apiTreeNode.TopTokensObj, namespaceSymbol);
+            apiTreeNode.TopTokensObj.Add(StructuredToken.CreateSpaceToken());
+            apiTreeNode.TopTokensObj.Add(StructuredToken.CreatePunctuationToken(SyntaxKind.OpenBraceToken));
 
             foreach (var namedTypeSymbol in SymbolOrderProvider.OrderTypes(namespaceSymbol.GetTypeMembers()))
             {
-                BuildType(apiTreeNode.Children, namedTypeSymbol, isHidden);
+                BuildType(apiTreeNode.ChildrenObj, namedTypeSymbol, isHidden);
             }
 
-            apiTreeNode.BottomTokens.Add(StructuredToken.CreatePunctuationToken(SyntaxKind.CloseBraceToken));
-            apiTreeNode.BottomTokens.Add(StructuredToken.CreateLineBreakToken());
-            apiTreeNode.BottomTokens.Add(StructuredToken.CreateEmptyToken());
+            apiTreeNode.BottomTokensObj.Add(StructuredToken.CreatePunctuationToken(SyntaxKind.CloseBraceToken));
+            apiTreeNode.BottomTokensObj.Add(StructuredToken.CreateLineBreakToken());
+            apiTreeNode.BottomTokensObj.Add(StructuredToken.CreateEmptyToken());
 
             apiTree.Add(apiTreeNode);
         }
@@ -239,62 +239,62 @@ namespace CSharpAPIParser.TreeToken
             bool isHidden = IsHiddenFromIntellisense(namedType);
             var apiTreeNode = new APITreeNode();
             apiTreeNode.Kind = "Type";
-            apiTreeNode.Properties.Add("SubKind", namedType.TypeKind.ToString().ToLowerInvariant());
+            apiTreeNode.PropertiesObj.Add("SubKind", namedType.TypeKind.ToString().ToLowerInvariant());
             apiTreeNode.Id = namedType.GetId();
             apiTreeNode.Name = namedType.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
 
             if (isHidden && !inHiddenScope)
             {
-                apiTreeNode.Tags.Add("Hidden");
+                apiTreeNode.TagsObj.Add("Hidden");
             }
 
-            BuildDocumentation(apiTreeNode.TopTokens, namedType);
-            BuildAttributes(apiTreeNode.TopTokens, namedType.GetAttributes());
-            BuildVisibility(apiTreeNode.TopTokens, namedType);
-            apiTreeNode.TopTokens.Add(StructuredToken.CreateSpaceToken());
+            BuildDocumentation(apiTreeNode.TopTokensObj, namedType);
+            BuildAttributes(apiTreeNode.TopTokensObj, namedType.GetAttributes());
+            BuildVisibility(apiTreeNode.TopTokensObj, namedType);
+            apiTreeNode.TopTokensObj.Add(StructuredToken.CreateSpaceToken());
 
             switch (namedType.TypeKind)
             {
                 case TypeKind.Class:
-                    BuildClassModifiers(apiTreeNode.TopTokens, namedType);
-                    apiTreeNode.TopTokens.Add(StructuredToken.CreateKeywordToken(SyntaxKind.ClassKeyword));
+                    BuildClassModifiers(apiTreeNode.TopTokensObj, namedType);
+                    apiTreeNode.TopTokensObj.Add(StructuredToken.CreateKeywordToken(SyntaxKind.ClassKeyword));
                     break;
                 case TypeKind.Delegate:
-                    apiTreeNode.TopTokens.Add(StructuredToken.CreateKeywordToken(SyntaxKind.DelegateKeyword));
+                    apiTreeNode.TopTokensObj.Add(StructuredToken.CreateKeywordToken(SyntaxKind.DelegateKeyword));
                     break;
                 case TypeKind.Enum:
-                    apiTreeNode.TopTokens.Add(StructuredToken.CreateKeywordToken(SyntaxKind.EnumKeyword));
+                    apiTreeNode.TopTokensObj.Add(StructuredToken.CreateKeywordToken(SyntaxKind.EnumKeyword));
                     break;
                 case TypeKind.Interface:
-                    apiTreeNode.TopTokens.Add(StructuredToken.CreateKeywordToken(SyntaxKind.InterfaceKeyword));
+                    apiTreeNode.TopTokensObj.Add(StructuredToken.CreateKeywordToken(SyntaxKind.InterfaceKeyword));
                     break;
                 case TypeKind.Struct:
                     if (namedType.IsReadOnly)
                     {
-                        apiTreeNode.TopTokens.Add(StructuredToken.CreateKeywordToken(SyntaxKind.ReadOnlyKeyword));
-                        apiTreeNode.TopTokens.Add(StructuredToken.CreateSpaceToken());
+                        apiTreeNode.TopTokensObj.Add(StructuredToken.CreateKeywordToken(SyntaxKind.ReadOnlyKeyword));
+                        apiTreeNode.TopTokensObj.Add(StructuredToken.CreateSpaceToken());
                     }
-                    apiTreeNode.TopTokens.Add(StructuredToken.CreateKeywordToken(SyntaxKind.StructKeyword));
+                    apiTreeNode.TopTokensObj.Add(StructuredToken.CreateKeywordToken(SyntaxKind.StructKeyword));
                     break;
             }
 
-            apiTreeNode.TopTokens.Add(StructuredToken.CreateSpaceToken());
-            DisplayName(apiTreeNode.TopTokens, namedType, namedType);
+            apiTreeNode.TopTokensObj.Add(StructuredToken.CreateSpaceToken());
+            DisplayName(apiTreeNode.TopTokensObj, namedType, namedType);
 
             if (namedType.TypeKind == TypeKind.Delegate)
             {
-                apiTreeNode.TopTokens.Add(StructuredToken.CreatePunctuationToken(SyntaxKind.SemicolonToken));
-                apiTreeNode.TopTokens.Add(StructuredToken.CreateLineBreakToken());
+                apiTreeNode.TopTokensObj.Add(StructuredToken.CreatePunctuationToken(SyntaxKind.SemicolonToken));
+                apiTreeNode.TopTokensObj.Add(StructuredToken.CreateLineBreakToken());
                 return;
             }
 
-            apiTreeNode.TopTokens.Add(StructuredToken.CreateSpaceToken());
-            BuildBaseType(apiTreeNode.TopTokens, namedType);
-            apiTreeNode.TopTokens.Add(StructuredToken.CreatePunctuationToken(SyntaxKind.OpenBraceToken));  
+            apiTreeNode.TopTokensObj.Add(StructuredToken.CreateSpaceToken());
+            BuildBaseType(apiTreeNode.TopTokensObj, namedType);
+            apiTreeNode.TopTokensObj.Add(StructuredToken.CreatePunctuationToken(SyntaxKind.OpenBraceToken));  
 
             foreach (var namedTypeSymbol in SymbolOrderProvider.OrderTypes(namedType.GetTypeMembers()))
             {
-                BuildType(apiTreeNode.Children, namedTypeSymbol, inHiddenScope || isHidden);
+                BuildType(apiTreeNode.ChildrenObj, namedTypeSymbol, inHiddenScope || isHidden);
             }
 
             foreach (var member in SymbolOrderProvider.OrderMembers(namedType.GetMembers()))
@@ -311,11 +311,11 @@ namespace CSharpAPIParser.TreeToken
                         continue;
                     }
                 }
-                BuildMember(apiTreeNode.Children, member, inHiddenScope);
+                BuildMember(apiTreeNode.ChildrenObj, member, inHiddenScope);
             }
-            apiTreeNode.BottomTokens.Add(StructuredToken.CreatePunctuationToken(SyntaxKind.CloseBraceToken));
-            apiTreeNode.BottomTokens.Add(StructuredToken.CreateLineBreakToken());
-            apiTreeNode.BottomTokens.Add(StructuredToken.CreateEmptyToken());
+            apiTreeNode.BottomTokensObj.Add(StructuredToken.CreatePunctuationToken(SyntaxKind.CloseBraceToken));
+            apiTreeNode.BottomTokensObj.Add(StructuredToken.CreateLineBreakToken());
+            apiTreeNode.BottomTokensObj.Add(StructuredToken.CreateEmptyToken());
 
             apiTree.Add(apiTreeNode);
         }
@@ -333,8 +333,8 @@ namespace CSharpAPIParser.TreeToken
                 foreach (var line in lines)
                 {
                     var docToken = new StructuredToken("// " + line.Trim());
-                    docToken.RenderClasses.Add("comment");
-                    docToken.Properties.Add("GroupId", "doc");
+                    docToken.RenderClassesObj.Add("comment");
+                    docToken.PropertiesObj.Add("GroupId", "doc");
                     tokenList.Add(docToken);
                     tokenList.Add(StructuredToken.CreateLineBreakToken());
                 }
@@ -406,30 +406,30 @@ namespace CSharpAPIParser.TreeToken
             bool isHidden = IsHiddenFromIntellisense(member);
             var apiTreeNode = new APITreeNode();
             apiTreeNode.Kind = "Member";
-            apiTreeNode.Properties.Add("SubKind", member.Kind.ToString());
+            apiTreeNode.PropertiesObj.Add("SubKind", member.Kind.ToString());
             apiTreeNode.Id = member.GetId();
             apiTreeNode.Name = member.ToDisplayString();
-            apiTreeNode.Tags.Add("HideFromNav");
+            apiTreeNode.TagsObj.Add("HideFromNav");
 
             if (isHidden && !inHiddenScope)
             {
-                apiTreeNode.Tags.Add("Hidden");
+                apiTreeNode.TagsObj.Add("Hidden");
             }
 
-            BuildDocumentation(apiTreeNode.TopTokens, member);
-            BuildAttributes(apiTreeNode.TopTokens, member.GetAttributes());
-            DisplayName(apiTreeNode.TopTokens, member);
+            BuildDocumentation(apiTreeNode.TopTokensObj, member);
+            BuildAttributes(apiTreeNode.TopTokensObj, member.GetAttributes());
+            DisplayName(apiTreeNode.TopTokensObj, member);
 
             if (member.Kind == SymbolKind.Field && member.ContainingType.TypeKind == TypeKind.Enum)
             {
-                apiTreeNode.TopTokens.Add(StructuredToken.CreatePunctuationToken(SyntaxKind.CommaToken));
+                apiTreeNode.TopTokensObj.Add(StructuredToken.CreatePunctuationToken(SyntaxKind.CommaToken));
             }
             else if (member.Kind != SymbolKind.Property)
             {
-                apiTreeNode.TopTokens.Add(StructuredToken.CreatePunctuationToken(SyntaxKind.SemicolonToken));
+                apiTreeNode.TopTokensObj.Add(StructuredToken.CreatePunctuationToken(SyntaxKind.SemicolonToken));
             }
 
-            apiTreeNode.TopTokens.Add(StructuredToken.CreateLineBreakToken());
+            apiTreeNode.TopTokensObj.Add(StructuredToken.CreateLineBreakToken());
             apiTree.Add(apiTreeNode);
         }
 
@@ -706,7 +706,7 @@ namespace CSharpAPIParser.TreeToken
 
             if (!String.IsNullOrWhiteSpace(navigateToId))
             {
-                token.Properties.Add("NavigateToId", navigateToId!);
+                token.PropertiesObj.Add("NavigateToId", navigateToId!);
             }
             
             return token;

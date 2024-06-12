@@ -102,26 +102,21 @@ static void HandlePackageFileParsing(Stream stream, FileInfo packageFilePath, Di
         }
         var parsedFileName = string.IsNullOrEmpty(outputFileName) ? assemblySymbol.Name : outputFileName;
         var treeTokenCodeFile = new CSharpAPIParser.TreeToken.CodeFileBuilder().Build(assemblySymbol, runAnalysis, dependencies);
-        var jsonTokenFilePath = Path.Combine(OutputDirectory.FullName, $"{parsedFileName}");
-        var gzipJsonTokenFilePath = Path.Combine(OutputDirectory.FullName, $"{parsedFileName}.gzip");
+        var gzipJsonTokenFilePath = Path.Combine(OutputDirectory.FullName, $"{parsedFileName}");
 
 
         var options = new JsonSerializerOptions()
         {
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
 
         {
-            using FileStream fileStream = new FileStream(jsonTokenFilePath, FileMode.Create, FileAccess.Write);
-            JsonSerializer.Serialize(fileStream, treeTokenCodeFile, options);
-
             using FileStream gzipFileStream = new FileStream(gzipJsonTokenFilePath, FileMode.Create, FileAccess.Write);
             using GZipStream gZipStream = new GZipStream(gzipFileStream, CompressionLevel.Optimal);
             JsonSerializer.Serialize(new Utf8JsonWriter(gZipStream, new JsonWriterOptions { Indented = false }), treeTokenCodeFile, options);
         }
 
-        Console.WriteLine($"TokenCodeFile File {jsonTokenFilePath} Generated Successfully.");
-        Console.WriteLine($"Compressed TokenCodeFile File {gzipJsonTokenFilePath} Generated Successfully.");
+        Console.WriteLine($"TokenCodeFile File {gzipJsonTokenFilePath} Generated Successfully.");
         Console.WriteLine();
     }
     catch (Exception ex)

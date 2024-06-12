@@ -22,36 +22,30 @@ namespace APIView.TreeToken
 
     public class StructuredToken
     {
-        [JsonPropertyName("t")]
-        public HashSet<string> _tagsForSerializer
+        public HashSet<string> Tags
         {
-            get { return Tags.Count > 0 ? Tags : null; }
-            set { Tags = value ?? new HashSet<string>(); }
+            get { return TagsObj.Count > 0 ? TagsObj : null; }
+            set { TagsObj = value ?? new HashSet<string>(); }
         }
-        [JsonPropertyName("p")]
-        public Dictionary<string, string> _propertiesForSerializer
+        public Dictionary<string, string> Properties
         {
-            get { return Properties.Count > 0 ? Properties : null; }
-            set { Properties = value ?? new Dictionary<string, string>(); }
+            get { return PropertiesObj.Count > 0 ? PropertiesObj : null; }
+            set { PropertiesObj = value ?? new Dictionary<string, string>(); }
         }
-        [JsonPropertyName("rc")]
-        public HashSet<string> _renderClassesForSerializer
+        public HashSet<string> RenderClasses
         {
-            get { return RenderClasses.Count > 0 ? RenderClasses : null; }
-            set { RenderClasses = value ?? new HashSet<string>(); }
+            get { return RenderClassesObj.Count > 0 ? RenderClassesObj : null; }
+            set { RenderClassesObj = value ?? new HashSet<string>(); }
         }
-        [JsonPropertyName("v")]
         public string Value { get; set; } = string.Empty;
-        [JsonPropertyName("i")]
         public string Id { get; set; }
-        [JsonPropertyName("k")]
         public StructuredTokenKind Kind { get; set; }
         [JsonIgnore]
-        public HashSet<string> Tags { get; set; } = new HashSet<string>();
+        public HashSet<string> TagsObj { get; set; } = new HashSet<string>();
         [JsonIgnore]
-        public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> PropertiesObj { get; set; } = new Dictionary<string, string>();
         [JsonIgnore]
-        public HashSet<string> RenderClasses { get; set; } = new HashSet<string>();
+        public HashSet<string> RenderClassesObj { get; set; } = new HashSet<string>();
 
         public StructuredToken()
         {
@@ -100,14 +94,14 @@ namespace APIView.TreeToken
             {
                 token.Id = id;
             }
-            token.RenderClasses.Add("text");
+            token.RenderClassesObj.Add("text");
             return token;
         }
 
         public static StructuredToken CreateKeywordToken(string value)
         {
             var token = new StructuredToken(value);
-            token.RenderClasses.Add("keyword");
+            token.RenderClassesObj.Add("keyword");
             return token;
         }
 
@@ -124,7 +118,7 @@ namespace APIView.TreeToken
         public static StructuredToken CreatePunctuationToken(string value)
         {
             var token = new StructuredToken(value);
-            token.RenderClasses.Add("punc");
+            token.RenderClassesObj.Add("punc");
             return token;
         }
 
@@ -136,81 +130,73 @@ namespace APIView.TreeToken
         public static StructuredToken CreateTypeNameToken(string value)
         {
             var token = new StructuredToken(value);
-            token.RenderClasses.Add("tname");
+            token.RenderClassesObj.Add("tname");
             return token;
         }
 
         public static StructuredToken CreateMemberNameToken(string value)
         {
             var token = new StructuredToken(value);
-            token.RenderClasses.Add("mname");
+            token.RenderClassesObj.Add("mname");
             return token;
         }
 
         public static StructuredToken CreateLiteralToken(string value)
         {
             var token = new StructuredToken(value);
-            token.RenderClasses.Add("literal");
+            token.RenderClassesObj.Add("literal");
             return token;
         }
 
         public static StructuredToken CreateStringLiteralToken(string value)
         {
             var token = new StructuredToken(value);
-            token.RenderClasses.Add("sliteral");
+            token.RenderClassesObj.Add("sliteral");
             return token;
         }
     }
 
     public class APITreeNode
     {
-        [JsonPropertyName("t")]
-        public HashSet<string> _tagsForSerializer
+        public HashSet<string> Tags
         {
-            get { return Tags.Count > 0 ? Tags : null; }
-            set { Tags = value ?? new HashSet<string>(); }
+            get { return TagsObj.Count > 0 ? TagsObj : null; }
+            set { TagsObj = value ?? new HashSet<string>(); }
         }
-        [JsonPropertyName("p")]
-        public Dictionary<string, string> _propertiesForSerializer
+        public Dictionary<string, string> Properties
         {
-            get { return Properties.Count > 0 ? Properties : null; }
-            set { Properties = value ?? new Dictionary<string, string>(); }
+            get { return PropertiesObj.Count > 0 ? PropertiesObj : null; }
+            set { PropertiesObj = value ?? new Dictionary<string, string>(); }
         }
-        [JsonPropertyName("tt")]
-        public List<StructuredToken> _topTokensForSerializer
+        public List<StructuredToken> TopTokens
         {
-            get { return TopTokens.Count > 0 ? TopTokens : null; }
-            set { TopTokens = value ?? new List<StructuredToken>(); }
+            get { return TopTokensObj.Count > 0 ? TopTokensObj : null; }
+            set { TopTokensObj = value ?? new List<StructuredToken>(); }
         }
-        [JsonPropertyName("bt")]
-        public List<StructuredToken> _bottomTokensForSerializer
+        public List<StructuredToken> BottomTokens
         {
-            get { return BottomTokens.Count > 0 ? BottomTokens : null; }
-            set { BottomTokens = value ?? new List<StructuredToken>(); }
+            get { return BottomTokensObj.Count > 0 ? BottomTokensObj : null; }
+            set { BottomTokensObj = value ?? new List<StructuredToken>(); }
         }
-        [JsonPropertyName("c")]
-        public List<APITreeNode> _childrenForSerializer
+        public List<APITreeNode> Children
         {
-            get { return Children.Count > 0 ? Children : null; }
-            set { Children = value ?? new List<APITreeNode>(); }
+            get { return ChildrenObj.Count > 0 ? ChildrenObj : null; }
+            set { ChildrenObj = value ?? new List<APITreeNode>(); }
         }
 
-        [JsonPropertyName("n")]
         public string Name { get; set; }
-        [JsonPropertyName("i")]
         public string Id { get; set; }
-        [JsonPropertyName("k")]
         public string Kind { get; set; }
         [JsonIgnore]
-        public HashSet<string> Tags { get; set; } = new HashSet<string>();
+        public HashSet<string> TagsObj { get; set; } = new HashSet<string>();
         [JsonIgnore]
-        public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> PropertiesObj { get; set; } = new Dictionary<string, string>();
         [JsonIgnore]
-        public List<StructuredToken> TopTokens { get; set; } = new List<StructuredToken>();
+        public List<StructuredToken> TopTokensObj { get; set; } = new List<StructuredToken>();
         [JsonIgnore]
-        public List<StructuredToken> BottomTokens { get; set; } = new List<StructuredToken>();
+        public List<StructuredToken> BottomTokensObj { get; set; } = new List<StructuredToken>();
         [JsonIgnore]
-        public List<APITreeNode> Children { get; set; } = new List<APITreeNode>();
+        public List<APITreeNode> ChildrenObj { get; set; } = new List<APITreeNode>();
          
         public override int GetHashCode()
         {
@@ -234,13 +220,13 @@ namespace APIView.TreeToken
 
         public void SortChildren()
         {
-            if (Children != null)
+            if (ChildrenObj != null)
             {
                 if (Kind.Equals("Namespace") || Kind.Equals("Type") || Kind.Equals("Member"))
                 {
-                    Children.Sort((x, y) => x.Name.CompareTo(y.Name));
+                    ChildrenObj.Sort((x, y) => x.Name.CompareTo(y.Name));
                 }
-                foreach (var child in Children)
+                foreach (var child in ChildrenObj)
                 {
                     child.SortChildren();
                 }
