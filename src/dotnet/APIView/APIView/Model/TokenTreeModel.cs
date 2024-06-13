@@ -39,7 +39,7 @@ namespace APIView.TreeToken
         }
         public string Value { get; set; } = string.Empty;
         public string Id { get; set; }
-        public StructuredTokenKind Kind { get; set; }
+        public StructuredTokenKind Kind { get; set; } = StructuredTokenKind.Content;
         [JsonIgnore]
         public HashSet<string> TagsObj { get; set; } = new HashSet<string>();
         [JsonIgnore]
@@ -209,12 +209,11 @@ namespace APIView.TreeToken
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType())
+            var other = obj as APITreeNode;
+            if (other == null)
             {
                 return false;
             }
-
-            var other = (APITreeNode)obj;
             return Name == other.Name && Id == other.Id && Kind == other.Kind;
         }
 
