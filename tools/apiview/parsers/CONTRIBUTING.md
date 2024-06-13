@@ -1,12 +1,14 @@
 # Contributing
 
 ## Overview
+This page describes how to contribute to [APIView](../../../src//dotnet/APIView/APIViewWeb/APIViewWeb.csproj) language level parsers.
+Specifically how to create or update a language parser to produce tree style tokens for APIView.
+
 ## Object Definitions
 ## APIView Features
 ## Serilizations
 
-This page describes how to contribute to [APIView](../../../src//dotnet/APIView/APIViewWeb/CONTRIBUTING.md) language level parsers.
-Specifically how to create or update a language parser to produce tree style tokens for APIView.
+
 
 ## Creating Tree Style Tokens
 The main idea is to capture the hierachy of the API using a tree data structure, then maintain a flat list of tokens for each node of the tree.
