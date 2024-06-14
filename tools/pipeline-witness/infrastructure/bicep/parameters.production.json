@@ -26,6 +26,12 @@
     "logsStorageAccountName": {
       "value": "azsdkengsyspipelinelogs"
     },
+    "devOpsEventHubNamespaceName": {
+      "value": "azsdkengsyspipelinelogs"
+    },
+    "gitHubEventHubNamespaceName": {
+      "value": "azsdkengsysgithublogs"
+    },
     "kustoClusterName": {
       "value": "azsdkengsys"
     },

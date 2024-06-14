@@ -102,6 +102,10 @@ resource appStorageAccount 'Microsoft.Storage/storageAccounts@2021-09-01' = {
     resource buildCompletedQueue 'queues' = {
       name: 'azurepipelines-build-completed'
     }
+
+    resource gitHubActionsQueue 'queues' = {
+      name: 'github-actionrun-completed'
+    }
   }
 }
 
@@ -249,7 +253,7 @@ resource locksContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/cont
 // Assign Storage Queue Data Contributor role for the Web App on the Queue Storage Account
 resource queueContributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
   scope: subscription()
-  // This is the Storage Blob Data Contributor role, which is the minimum role permission we can give.
+  // This is the Storage Queue Data Contributor role, which is the minimum role permission we can give.
   // See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage
   name: '974c5e8b-45b9-4653-ba55-5f855dd0fb88'
 }

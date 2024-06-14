@@ -5,6 +5,7 @@ using Azure.Core.Extensions;
 using Azure.Identity;
 using Azure.Sdk.Tools.PipelineWitness.ApplicationInsights;
 using Azure.Sdk.Tools.PipelineWitness.Configuration;
+using Azure.Sdk.Tools.PipelineWitness.GitHubActions;
 using Azure.Sdk.Tools.PipelineWitness.Services;
 using Azure.Sdk.Tools.PipelineWitness.Services.WorkTokens;
 
@@ -18,6 +19,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.Services.Client;
 using Microsoft.VisualStudio.Services.Common;
 using Microsoft.VisualStudio.Services.WebApi;
+using Octokit;
+using AccessToken = Azure.Core.AccessToken;
 
 namespace Azure.Sdk.Tools.PipelineWitness
 {
@@ -48,12 +51,17 @@ namespace Azure.Sdk.Tools.PipelineWitness
             builder.Services.AddTransient(CreateVssConnection);
 
             builder.Services.AddLogging();
-            builder.Services.AddTransient<BlobUploadProcessor>();
-            builder.Services.AddTransient<Func<BlobUploadProcessor>>(provider => provider.GetRequiredService<BlobUploadProcessor>);
 
             builder.Services.Configure<PipelineWitnessSettings>(settingsSection);
 
+            builder.Services.AddTransient<BlobUploadProcessor>();
+            builder.Services.AddTransient<Func<BlobUploadProcessor>>(provider => provider.GetRequiredService<BlobUploadProcessor>);
             builder.Services.AddHostedService<BuildCompleteQueueWorker>(settings.BuildCompleteWorkerCount);
+
+            builder.Services.AddSingleton<ICredentialStore>(p => new GitHubCliCredentialStore());
+            builder.Services.AddTransient<GitHubActionProcessor>();
+            builder.Services.AddHostedService<GitHubActionsRunQueueWorker>(settings.GitHubActionRunsWorkerCount);
+
             builder.Services.AddHostedService<AzurePipelinesBuildDefinitionWorker>();
         }
 

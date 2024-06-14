@@ -7,6 +7,8 @@ param appServicePlanName string
 param webAppName string
 param cosmosAccountName string
 param appStorageAccountName string
+param devOpsEventHubNamespaceName string
+param gitHubEventHubNamespaceName string
 
 param logsResourceGroupName string
 param logsStorageAccountName string
@@ -49,5 +51,7 @@ module pipelineLogs 'logsResourceGroup.bicep' = {
     kustoDatabaseName: kustoDatabaseName
     webAppName: webAppName
     appIdentityPrincipalId: pipelineWitness.outputs.appIdentityPrincipalId
+    devOpsEventHubNamespaceName: devOpsEventHubNamespaceName
+    gitHubEventHubNamespaceName: gitHubEventHubNamespaceName
   }
 }
